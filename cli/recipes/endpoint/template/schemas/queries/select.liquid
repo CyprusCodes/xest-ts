@@ -1,0 +1,24 @@
+import { submitQuery, camelKeys } from "~root/lib/database";
+
+export interface {{ entityName | toPascalCase | singular }} { [key: string]: any }
+
+export interface Select{{ entityName | toPascalCase }}Filters {
+  {%- for col in mappedFilters %}
+  {{ col.camelName }}?: any;
+  {%- endfor %}
+}
+
+const select{{ entityName | toPascalCase }}Raw = (
+  filters: Select{{ entityName | toPascalCase }}Filters
+): Promise<{{ entityName | toPascalCase | singular }}[]> => {
+  return submitQuery`
+    SELECT {{ selectableColumns | sqlColumns: schema }} 
+    FROM {{ entityName | toSnakeCase }}
+    WHERE 1=1
+    {%- for col in mappedFilters %}
+    ${ filters.{{ col.camelName }} ? `AND {{ col.column }} = \${ filters.{{ col.camelName }} }` : "" }
+    {%- endfor %}
+  `;
+};
+
+export const select{{ entityName | toPascalCase }} = camelKeys(select{{ entityName | toPascalCase }}Raw);

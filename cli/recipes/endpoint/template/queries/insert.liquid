@@ -1,0 +1,41 @@
+import { submitQuery, getInsertId, sqlValueOrNull } from "~root/lib/database";
+
+/**
+ * Interface for {{ entityName | toPascalCase }} insertion data
+ */
+export interface Insert{{ entityName | toPascalCase }}Params {
+  {%- for column in schemaColumns %}
+  {{ column.column | toCamelCase }}{% if column.nullable %}?{% endif %}: {% if column.dataType == 'json' %}any{% else %}any{% endif %}; 
+  {%- endfor %}
+}
+
+/**
+ * Executes the INSERT query for {{ entityName | toPascalCase }}
+ */
+const insert{{ entityName | toPascalCase }} = ({
+  {{ tableFields | functionParameters }}
+}: Insert{{ entityName | toPascalCase }}Params): Promise<any> => submitQuery`
+  INSERT INTO {{ entityName | toSnakeCase }} (
+    {%- for column in schemaColumns %}
+    {{ column.column }}{%- unless forloop.last %}, {% endunless -%}
+    {%- endfor %}
+  ) VALUES (
+    {%- for column in schemaColumns %}
+    {%- if column.nullable -%}
+        {%- if column.dataType == 'json' -%}
+            ${sqlValueOrNull({{ column.column | toCamelCase }} ? JSON.stringify({{ column.column | toCamelCase }}) : null)}
+        {%- else -%}
+            ${sqlValueOrNull({{ column.column | toCamelCase }})}
+        {%- endif -%}
+    {%- else -%}
+        {%- if column.dataType == 'json' -%}
+            ${JSON.stringify({{ column.column | toCamelCase }})}
+        {%- else -%}
+            ${ {{ column.column | toCamelCase }} }
+        {%- endif -%}
+    {%- endif -%}{%- unless forloop.last %}, {% endunless -%}
+    {%- endfor %}
+  );
+`;
+
+export default getInsertId(insert{{ entityName | toPascalCase }});

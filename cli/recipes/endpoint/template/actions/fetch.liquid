@@ -1,0 +1,23 @@
+{% assign entityPascal = entityName | toPascalCase %}
+{% assign actionName = "fetch" | append: entityPascal %}
+{% assign queryName = "select" | append: entityPascal %}
+
+{% if mappedFilters.length > 0 %}
+  {% assign filterPart = "" %}
+  {% for col in mappedFilters %}
+    {% assign filterPart = filterPart | append: col.pascalName %}
+    {% if forloop.last == false %}{% assign filterPart = filterPart | append: "And" %}{% endif %}
+  {% endfor %}
+  {% assign actionName = actionName | append: "By" | append: filterPart %}
+  {% assign queryName = queryName | append: "By" | append: filterPart %}
+{% endif %}
+
+import { {{ queryName }} } from "./queries/{{ queryName }}";
+
+export const {{ actionName }} = async (
+    filters: any = {}
+): Promise<{ {{ entityName | toCamelCase }}: any[] }> => {
+    const {{ entityName | toCamelCase }} = await {{ queryName }}(filters);
+
+    return { {{ entityName | toCamelCase }} };
+};

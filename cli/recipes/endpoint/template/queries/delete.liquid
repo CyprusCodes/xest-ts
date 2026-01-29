@@ -1,0 +1,28 @@
+import { submitQuery } from "~root/lib/database";
+
+/**
+ * Interface for delete filters
+ */
+export interface Delete{{ entityName | toPascalCase }}Params {
+  {%- for column in defaultFilterColumns -%}
+  {{ column | toCamelCase }}: any; // Replace 'any' with specific types like 'number' if available in your schema
+  {%- endfor -%}
+}
+
+/**
+ * Executes the DELETE query for {{ entityName | toPascalCase }}
+ */
+const delete{{ entityName | toPascalCase }} = ({
+  {%- for column in defaultFilterColumns -%}
+  {{ column | toCamelCase }}{%- unless forloop.last -%},{%- endunless -%}
+  {%- endfor -%} 
+}: Delete{{ entityName | toPascalCase }}Params): Promise<any> => submitQuery`
+  DELETE 
+  FROM {{ entityName | toSnakeCase }}
+  WHERE 
+  {%- for column in defaultFilterColumns %}
+  {{ column | toSnakeCase }} = ${ {{ column | toCamelCase }} } {%- unless forloop.last %} AND {% endunless -%}
+  {%- endfor -%}
+`;
+
+export default delete{{ entityName | toPascalCase }};

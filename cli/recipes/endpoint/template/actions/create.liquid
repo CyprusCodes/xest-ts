@@ -1,0 +1,18 @@
+import insert{{ entityName | toPascalCase }} from "./queries/insert{{ entityName | toPascalCase }}";
+
+/**
+ * Creates a new {{ entityName | toPascalCase | singular }} 
+ */
+const create{{ entityName | toPascalCase }} = async (
+  {{ tableFields | functionParametersTyped }}
+): Promise<{ inserted{{ entityName | toPascalCase | singular }}Id: number }> => {
+  const inserted{{ entityName | toPascalCase | singular }}Id = await insert{{ entityName | toPascalCase }}(
+    {{ tableFields | functionParameters }}
+  );
+
+  return { 
+    inserted{{ entityName | toPascalCase | singular }}Id: inserted{{ entityName | toPascalCase | singular }}Id as number 
+  };
+};
+
+export default create{{ entityName | toPascalCase }};

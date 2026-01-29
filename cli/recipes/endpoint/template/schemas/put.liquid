@@ -1,0 +1,77 @@
+import * as yup from 'yup';
+{{ importsColumns | schemaImports }}
+
+/**
+ * Validation schema for updating (PUT) {{ entityName | toPascalCase }}
+ */
+const newPut{{ entityName | toPascalCase }}Schema = yup.object().shape({
+{%- comment %} --- PART 1: Identifying Columns (Params) --- {% endcomment %}
+{%- for column in filteredFinalColumns %}
+  {{ column.column | toCamelCase }}: yup
+    .number()
+    .integer()
+    .required()
+    .label('{{ column.column | toCamelCase }}')
+    .test(
+      'doesExist',
+      'The {{ column.column | toCamelCase }} field must be a valid {{ column.column | toCamelCase }}',
+      async function (value) {
+        if (value === undefined || value === null) return false;
+        const count = await select{{ column.foreignKeyTo.targetTable | toPascalCase }}ById({ 
+          {%- if column.column != column.foreignKeyTo.targetColumn %}
+          {{ column.foreignKeyTo.targetColumn | toCamelCase }}: value
+          {%- else %}
+          {{ column.column | toCamelCase }}: value
+          {%- endif %}
+        });
+        return count > 0;
+      }
+    ),
+{%- endfor %}
+
+{%- comment %} --- PART 2: Updateable Columns (Body) --- {% endcomment %}
+{%- for column in uniqueSchemaColumns %}
+  {{ column.column | toCamelCase }}: yup
+    {%- if column.columnKey == 'MUL' and column.dataType == 'int' -%}
+      .number().integer()
+      {%- if column.nullable %}.nullable(){% endif %}
+      .test(
+        'doesExist',
+        'The {{ column.column | toCamelCase }} field must be a valid {{ column.column | toCamelCase }}',
+        async function (value) {
+          if (value === undefined || value === null) return true;
+          const count = await select{{ column.foreignKeyTo.targetTable | toPascalCase }}ById({ 
+            {%- if column.column != column.foreignKeyTo.targetColumn %}
+            {{ column.foreignKeyTo.targetColumn | toCamelCase }}: value
+            {%- else %}
+            {{ column.column | toCamelCase }}: value
+            {%- endif %}
+          });
+          return count > 0;
+        }
+      )
+    {%- else -%}
+      {%- case column.dataType -%}
+        {%- when 'varchar', 'char', 'text', 'mediumtext', 'longtext', 'tinytext', 'binary', 'varbinary', 'year' -%}
+          .string(){% if column.dataType == 'varchar' %}.max({{ column.columnnType | varcharSize }}){% endif %}
+        {%- when 'int', 'smallint', 'mediumint', 'bigint', 'decimal', 'float', 'double' -%}
+          .number(){% unless column.dataType == 'float' or column.dataType == 'double' %}.integer(){% endunless %}
+        {%- when 'json' -%}
+          .object()
+        {%- when 'tinyint', 'bit', 'boolean' -%}
+          .boolean()
+        {%- when 'datetime', 'date' -%}
+          .date()
+        {%- when 'blob', 'mediumblob', 'longblob', 'tinyblob' -%}
+          .mixed().test('is-blob', 'Binary data', value => value === null || value instanceof Buffer || value instanceof Uint8Array)
+        {%- else -%}
+          .mixed()
+      {%- endcase -%}
+      {%- if column.nullable %}.nullable(){% endif %}
+    {%- endif -%}
+    .label('{{ column.column | toCamelCase }}')
+    .typeError('The {{ column.column | toCamelCase }} field must be a {{ column.dataType }}'),
+{%- endfor %}
+});
+
+export default newPut{{ entityName | toPascalCase }}Schema;

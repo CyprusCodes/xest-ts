@@ -1,0 +1,19 @@
+version: "3.3"
+services:
+  test-db:
+    container_name: test-mysql-db
+    image: jamielsharief/mysql:latest
+    restart: always
+    environment:
+      MYSQL_DATABASE: "test_db"
+      MYSQL_USER: "user"
+      MYSQL_PASSWORD: "password"
+      MYSQL_ROOT_PASSWORD: "password"
+    ports:
+      - "3306:3306"
+    expose:
+      - "3306"
+    volumes:
+      - vol-test-db:/var/lib/mysql
+volumes:
+  vol-test-db:
