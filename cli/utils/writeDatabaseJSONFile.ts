@@ -1,0 +1,29 @@
+import path from "path";
+import fs from "fs-extra";
+
+const writeDatabaseJSONFile = (
+  projectRoot: string,
+  appNameSnakeCase: string
+): void => {
+  const databaseJSON = `  {
+    "dev": {
+      "driver": "mysql",
+      "host": "localhost",
+      "port": "3306",
+      "user": "root",
+      "password": "password",
+      "database": "${appNameSnakeCase}_db",
+      "multipleStatements": true
+    },
+    "sql-file": true,
+    "defaultEnv": "dev"
+  }
+`;
+  const filePath = path.join(projectRoot, "./database.json");
+  const doesItExist: any = fs.ensureFileSync(filePath);
+  if (!doesItExist) {
+    fs.writeFileSync(filePath, databaseJSON);
+  }
+};
+
+export default writeDatabaseJSONFile;

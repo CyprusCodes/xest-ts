@@ -1,18 +1,19 @@
 import "module-alias/register";
 import helmet from "helmet";
-import express, { Application, Request } from "express";
+import express, { Application } from "express";
 import cors from "cors";
 import rateLimit from "express-rate-limit";
 import compression from "compression";
 import morgan from "morgan";
-import monitoring from "~root/utils/monitoring";
 import qs from "qs";
+import monitoring from "~root/utils/monitoring";
 
 // Import side-effect for production check
 import exitIfProductionDatabase from "~root/utils/exitIfProductionDatabase";
-exitIfProductionDatabase();
 
 import router from "./routes";
+
+exitIfProductionDatabase();
 
 const port: string | number = process.env.PORT || 3001;
 const app: Application = express();

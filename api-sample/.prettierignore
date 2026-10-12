@@ -1,0 +1,8 @@
+node_modules
+dist
+coverage
+coverage-unit
+full-coverage
+migrations
+database/docker-compose.yml
+database/docker-compose.apple-silicon.yml

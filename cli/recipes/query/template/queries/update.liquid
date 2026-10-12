@@ -1,7 +1,7 @@
-const { submitQuery } = require("~root/database");
+import { submitQuery } from "~root/lib/database";
 
 const update{{entityName | toPascalCase}} = (
-    {{ filterFieldsWithPrimary | functionParameters }}
+    {{ filterFieldsWithPrimary | functionParameters }}{% if filterFieldsWithPrimary and filterFieldsWithPrimary.size > 0 %}: any{% endif %}
 ) => submitQuery`
 {% sql %}
 UPDATE
@@ -12,4 +12,4 @@ WHERE {{ primaryField | toSnakeCase }} = {{"${"}}{{primaryField | toCamelCase}}}
 {% endsql %}
 `;
 
-module.exports = update{{ entityName | toPascalCase }};
+export default update{{entityName | toPascalCase}};

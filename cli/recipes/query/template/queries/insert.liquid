@@ -1,7 +1,7 @@
-const { submitQuery, getInsertId } = require("~root/database");
+import { submitQuery, getInsertId } from "~root/lib/database";
 
 const insert{{entityName | toPascalCase}} = (
-    {{ tableFields | functionParameters }}
+    {{ tableFields | functionParameters }}{% if tableFields and tableFields.size > 0 %}: any{% endif %}
 ) => submitQuery`
 {% sql %}
 INSERT INTO {{ tableName | toSnakeCase }} (
@@ -12,4 +12,4 @@ INSERT INTO {{ tableName | toSnakeCase }} (
 {% endsql %}
 `;
 
-module.exports = getInsertId(insert{{ entityName | toPascalCase }});
+export default getInsertId(insert{{entityName | toPascalCase }});

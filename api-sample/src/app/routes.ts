@@ -10,6 +10,7 @@ import getUserTypes from "./controllers/users/userTypes";
 import putPassword from "./controllers/password-recovery/putPassword";
 import postRecoveryRequest from "./controllers/password-recovery/postRecoveryRequest";
 import healthcheck from "./platform/healthcheck";
+
 const router: Router = express.Router();
 
 // USER MANAGEMENT

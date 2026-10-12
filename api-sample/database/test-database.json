@@ -5,7 +5,7 @@
     "port": "3306",
     "user": "root",
     "password": "password",
-    "database": "test_db",
+    "database": "{{PROJECT_NAME_SNAKECASE}}_db",
     "multipleStatements": true
   },
   "sql-file": true,

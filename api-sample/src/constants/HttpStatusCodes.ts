@@ -9,7 +9,7 @@ export enum HttpStatusCodes {
 }
 
 // Alternatively, for cleaner imports in your existing code:
-export const OK = HttpStatusCodes.OK;
-export const BAD_REQUEST = HttpStatusCodes.BAD_REQUEST;
-export const INVALID_CREDENTIALS = HttpStatusCodes.INVALID_CREDENTIALS;
-export const ERROR = HttpStatusCodes.ERROR;
+export const { OK } = HttpStatusCodes;
+export const { BAD_REQUEST } = HttpStatusCodes;
+export const { INVALID_CREDENTIALS } = HttpStatusCodes;
+export const { ERROR } = HttpStatusCodes;

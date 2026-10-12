@@ -2,19 +2,9 @@ import * as yup from "yup";
 import selectUserByEmail from "./queries/selectUserById";
 
 export const postUserSchema = yup.object().shape({
-  firstName: yup
-    .string()
-    .required()
-    .label("First Name"),
-  lastName: yup
-    .string()
-    .required()
-    .label("Last Name"),
-  password: yup
-    .string()
-    .min(8)
-    .required()
-    .label("Password"),
+  firstName: yup.string().required().label("First Name"),
+  lastName: yup.string().required().label("Last Name"),
+  password: yup.string().min(8).required().label("Password"),
   userTypeId: yup
     .number()
     .required()

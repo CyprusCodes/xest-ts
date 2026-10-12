@@ -1,11 +1,5 @@
 // declarations.d.ts
 declare module "helmet";
-declare module "express-rate-limit";
-declare module "compression";
-declare module "morgan";
-declare module "cors";
-declare module "yup";
-declare module "jsonwebtoken";
 declare module "bcryptjs";
 declare module "nodemailer";
 declare module "nodemailer-express-handlebars";

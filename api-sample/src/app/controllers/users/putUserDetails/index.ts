@@ -1,10 +1,8 @@
-import { Response } from "express";
+import { Response, Request } from "express";
 import jwt from "jsonwebtoken";
 import fetchUserById from "~root/actions/users/fetchUserById";
 import modifyUser from "~root/actions/users/modifyUser";
 import handleAPIError from "~root/utils/handleAPIError";
-
-import { Request } from "express";
 
 interface AuthenticatedRequest extends Request {
   user?: {
@@ -13,8 +11,10 @@ interface AuthenticatedRequest extends Request {
   };
 }
 
-const putUserDetails = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
-  
+const putUserDetails = async (
+  req: AuthenticatedRequest,
+  res: Response
+): Promise<void> => {
   if (!req.user) {
     res.sendStatus(401);
     return;

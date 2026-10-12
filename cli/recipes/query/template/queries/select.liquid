@@ -1,7 +1,7 @@
-const { submitQuery, camelKeys } = require("~root/database");
+import { submitQuery, camelKeys } from "~root/lib/database";
 
 const select{{entityName | toPascalCase}} = (
-    {{ filterFields | functionParameters }}
+    {{ filterFields | functionParameters }}{% if filterFields and filterFields.size > 0 %}: any{% endif %}
 ) => submitQuery`
 {% sql %}
 SELECT {{ selectFields | sqlColumns: schema }} FROM {{tableName | toSnakeCase }}
@@ -10,4 +10,4 @@ SELECT {{ selectFields | sqlColumns: schema }} FROM {{tableName | toSnakeCase }}
 {% endsql %}
 `;
 
-module.exports = camelKeys(select{{ entityName | toPascalCase }});
+export default camelKeys(select{{entityName | toPascalCase }});

@@ -3,10 +3,8 @@ import createUser from "~root/actions/users/createUser";
 import handleAPIError from "~root/utils/handleAPIError";
 import { postUserSchema, PostUserTicket } from "./schemas/postUserSchema";
 
-
 const postUser = async (req: Request, res: Response): Promise<void> => {
   try {
-    
     const validatedBody = (await postUserSchema.validate(req.body, {
       abortEarly: false,
       stripUnknown: true

@@ -1,13 +1,13 @@
-import mysql, { Connection, ConnectionOptions, QueryOptions } from "mysql2";
+import mysql, { Connection, ConnectionOptions } from "mysql2";
 import { promisify } from "es6-promisify";
 import path from "path";
 import get from "lodash/get";
 import camelCase from "lodash/camelCase";
 import mapKeys from "lodash/mapKeys";
+import dotenv from "dotenv";
 import monitoring from "~root/utils/monitoring";
 import parseMySQLConnectionString from "~root/utils/parseMySQLConnectionString";
 import nestTabularData from "~root/utils/nestTabularData";
-import dotenv from "dotenv";
 
 dotenv.config({
   path: path.join(__dirname, ".env")
@@ -133,7 +133,7 @@ const initConnection = (newConnection: Connection) => {
 
     const query = new String(escapedQuery) as EscapedString;
     query._escaped_before = ESCAPE_SYMBOL;
-    return (query as unknown) as string;
+    return query as unknown as string;
   };
 
   sqlId = (identifier: string): string => {
@@ -141,7 +141,7 @@ const initConnection = (newConnection: Connection) => {
       newConnection.escapeId(identifier)
     ) as EscapedString;
     escapedId._escaped_before = ESCAPE_SYMBOL;
-    return (escapedId as unknown) as string;
+    return escapedId as unknown as string;
   };
 
   sqlValueOrNull = (val: any) =>
@@ -164,7 +164,7 @@ const initConnection = (newConnection: Connection) => {
 };
 
 // --- Connection Resilience ---
-const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const MAX_CONN_RETRIES = 10;
 const RETRY_DELAY = 1000;
 let connectionRetries = 10;
@@ -187,7 +187,7 @@ function handleDisconnect(client: Connection) {
     }
 
     connection = mysql.createConnection(CONFIG);
-    connection.connect(err => {
+    connection.connect((err) => {
       if (err) {
         connectionRetries -= 1;
         if (connectionRetries < 1) {
@@ -209,7 +209,7 @@ function handleDisconnect(client: Connection) {
 export const camelKeys = (query: (...args: any[]) => Promise<any[]>) => {
   return async (...args: any[]) => {
     const results = await query(...args);
-    return results.map(d => mapKeys(d, (v, k) => camelCase(k)));
+    return results.map((d) => mapKeys(d, (v, k) => camelCase(k)));
   };
 };
 
@@ -232,7 +232,7 @@ export const getProperty = (
 ) => {
   return async (...args: any[]) => {
     const results = await query(...args);
-    return results.map(result => get(result, propertyToGet, defaultValue));
+    return results.map((result) => get(result, propertyToGet, defaultValue));
   };
 };
 

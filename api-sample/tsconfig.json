@@ -6,11 +6,12 @@
     "outDir": "./dist",
     "rootDir": "./",
     "strict": true,
-    "resolveJsonModule": true, 
+    "resolveJsonModule": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
+    "types": ["node", "jest"],
     "baseUrl": ".",
     "paths": {
       "~root/*": ["src/*"],
