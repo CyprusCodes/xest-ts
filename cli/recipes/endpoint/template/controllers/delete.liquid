@@ -1,0 +1,32 @@
+import { Request, Response } from "express";
+import handleAPIError from "~root/utils/handleAPIError";
+import remove{{ entityName | toPascalCase }} from "~root/actions/{{ entityName | toCamelCase }}/remove{{ entityName | toPascalCase }}";
+import newDelete{{ entityName | toPascalCase }}Schema from "./schema/newDelete{{ entityName | toPascalCase }}Schema";
+
+/**
+ * Handle DELETE request for {{ entityName | toPascalCase }}
+ */
+const delete{{ entityName | toPascalCase }} = async (req: Request, res: Response): Promise<void> => {
+  {% if filteredColumns.length > 0 %}
+  const { {{ filteredColumns | functionParameters }} } = req.params;
+  {% endif %}
+
+  try {
+    // Validate the parameters against the Yup schema
+    await newDelete{{ entityName | toPascalCase }}Schema.validate(
+      { {{ filteredColumns | functionParameters }} }, 
+      { abortEarly: false }
+    );
+
+    // Execute the action
+    await remove{{ entityName | toPascalCase }}(
+      {{ filteredColumns | functionParameters | functionArgumentsWithTypesCast }}
+    );
+
+    res.status(204).send({ success: true });
+  } catch (err) {
+    handleAPIError(res, err);
+  }
+};
+
+export default delete{{ entityName | toPascalCase }};

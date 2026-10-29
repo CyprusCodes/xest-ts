@@ -1,0 +1,98 @@
+{
+  "extends": [
+    "airbnb-base",
+    "prettier",
+    "plugin:eslint-comments/recommended"
+  ],
+  "ignorePatterns": [
+    "node_modules",
+    "dist",
+    "coverage*",
+    "full-coverage",
+    "**/*.d.ts",
+    "**/*.snap"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2020,
+    "sourceType": "module"
+  },
+  "plugins": ["prettier", "justfulfil", "@typescript-eslint"],
+  "rules": {
+    "prettier/prettier": ["error"],
+    "camelcase": "off",
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      { "argsIgnorePattern": "^_" }
+    ],
+    "no-console": "error",
+    "no-restricted-syntax": ["off", "ForOfStatement"],
+    "no-await-in-loop": "off",
+    "justfulfil/wrong-snake-case-usage-in-query": "error",
+    "justfulfil/wrong-order-of-query-helpers": "error",
+    "justfulfil/module-alias-register-should-be-first": "error",
+    "eslint-comments/no-unused-disable": "off",
+    "eslint-comments/disable-enable-pair": "off",
+    "eslint-comments/no-unlimited-disable": "off",
+    "no-underscore-dangle": "off",
+    "no-new-wrappers": "off",
+    "no-param-reassign": "off",
+    "func-names": "off",
+    "prefer-destructuring": "off",
+    "import/no-mutable-exports": "off",
+    "consistent-return": "off",
+    "import/extensions": "off",
+    "import/prefer-default-export": "off",
+    "import/no-unresolved": "off",
+    "no-use-before-define": "off",
+    "@typescript-eslint/no-use-before-define": "off",
+    "no-shadow": "off",
+    "@typescript-eslint/no-shadow": "off"
+  },
+  "settings": {
+    "import/resolver": {
+      "alias": {
+        "map": [
+          ["~root", "./src/"],
+          ["~test", "./test/"]
+        ]
+      }
+    }
+  },
+  "globals": {
+    "it": true,
+    "before": true,
+    "expect": true,
+    "after": true,
+    "jest": true,
+    "test": true,
+    "beforeEach": true,
+    "afterEach": true
+  },
+  "overrides": [
+    {
+      "files": ["**/*.ts"],
+      "rules": {
+        "no-undef": "off",
+        "no-redeclare": "off"
+      }
+    },
+    {
+      "files": [
+        "test/**/*.ts",
+        "**/*.test.ts",
+        "**/test.ts",
+        "src/utils/monitoring/*.ts",
+        "src/lib/database/*.ts",
+        "src/app/controllers/users/login/index.ts",
+        "src/app/middlewares/authentication/index.ts",
+        "src/setupTests.ts"
+      ],
+      "rules": {
+        "no-console": "off",
+        "max-classes-per-file": "off"
+      }
+    }
+  ]
+}

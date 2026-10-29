@@ -1,0 +1,53 @@
+import * as yup from 'yup';
+{{ schemaColumns | schemaImports }}
+
+/**
+ * Validation schema for creating a new {{ entityName | toPascalCase }}
+ */
+const newPost{{ entityName | toPascalCase }}Schema = yup.object().shape({
+{%- for column in schemaColumns %}
+  {{ column.column | toCamelCase }}: yup
+    {%- if column.columnKey == 'MUL' and column.dataType == 'int' -%}
+      .number().integer()
+      {%- if column.nullable %}.nullable(){% else %}.required(){% endif %}
+      .label('{{ column.column | toCamelCase }}')
+      .test(
+        'doesExist',
+        'The {{ column.column | toCamelCase }} field must be a valid {{ column.column | toCamelCase }}',
+        async function (value) {
+          if (value === undefined || value === null) return {% if column.nullable %}true{% else %}false{% endif %};
+          const count = await select{{ column.foreignKeyTo.targetTable | toPascalCase }}ById({ 
+            {%- if column.column != column.foreignKeyTo.targetColumn %}
+            {{ column.foreignKeyTo.targetColumn | toCamelCase }}: value
+            {%- else %}
+            {{ column.column | toCamelCase }}: value
+            {%- endif %}
+          });
+          return count > 0;
+        }
+      )
+    {%- else -%}
+      {%- case column.dataType -%}
+        {%- when 'varchar', 'char', 'text', 'mediumtext', 'longtext', 'tinytext', 'binary', 'varbinary', 'year' -%}
+          .string(){% if column.dataType == 'varchar' %}.max({{ column.columnnType | varcharSize }}){% endif %}{% if column.dataType == 'year' %}.max(4){% endif %}
+        {%- when 'int', 'smallint', 'mediumint', 'bigint', 'decimal', 'float', 'double' -%}
+          .number(){% unless column.dataType == 'float' or column.dataType == 'double' %}.integer(){% endunless %}
+        {%- when 'json' -%}
+          .object()
+        {%- when 'tinyint', 'bit', 'boolean' -%}
+          .boolean()
+        {%- when 'datetime', 'date' -%}
+          .date()
+        {%- when 'blob', 'mediumblob', 'longblob', 'tinyblob' -%}
+          .mixed().test('is-blob', 'Binary data', value => value instanceof Buffer || value instanceof Uint8Array || value === null)
+        {%- else -%}
+          .mixed()
+      {%- endcase -%}
+      {%- if column.nullable %}.nullable(){% else %}.required(){% endif %}
+      .label('{{ column.column | toCamelCase }}')
+      .typeError('The {{ column.column | toCamelCase }} field must be a {{ column.dataType }}')
+    {%- endif -%},
+{%- endfor %}
+});
+
+export default newPost{{ entityName | toPascalCase }}Schema;

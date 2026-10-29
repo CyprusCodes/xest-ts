@@ -1,0 +1,13 @@
+import { submitQuery, camelKeys } from "~root/lib/database";
+
+const select{{entityName | toPascalCase}} = (
+    {{ filterFields | functionParameters }}{% if filterFields and filterFields.size > 0 %}: any{% endif %}
+) => submitQuery`
+{% sql %}
+SELECT {{ selectFields | sqlColumns: schema }} FROM {{tableName | toSnakeCase }}
+{{ tablesToJoin | joinGenerator: schema }}
+{{ filterFields | sqlFilters }}
+{% endsql %}
+`;
+
+export default camelKeys(select{{entityName | toPascalCase }});

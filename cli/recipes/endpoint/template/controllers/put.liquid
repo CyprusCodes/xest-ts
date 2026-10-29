@@ -1,0 +1,36 @@
+import { Request, Response } from "express";
+import handleAPIError from "~root/utils/handleAPIError";
+import modify{{ entityName | toPascalCase }} from "~root/actions/{{ entityName | toCamelCase }}/modify{{ entityName | toPascalCase }}";
+import newPut{{ entityName | toPascalCase }}Schema from "./schema/newPut{{ entityName | toPascalCase }}Schema";
+
+/**
+ * Handle PUT request for {{ entityName | toPascalCase }}
+ */
+const put{{ entityName | toPascalCase }} = async (req: Request, res: Response): Promise<void> => {
+  {% if filteredColumns.length > 0 %}
+  const { {{ filteredColumns | functionParameters }} } = req.params;
+  {% endif %}
+  
+  {% if uniqueIncludeColumns.length > 0 %}
+  const { {{ uniqueIncludeColumns | functionParameters }} } = req.body;
+  {% endif %}
+
+  try {
+    // Validate the combination of params and body
+    await newPut{{ entityName | toPascalCase }}Schema.validate(
+      { {{ argsColumns | functionParameters }} }, 
+      { abortEarly: false }
+    );
+
+    // Execute the modification action
+    await modify{{ entityName | toPascalCase }}(
+      {{ argsColumns | functionParameters }}
+    );
+
+    res.status(200).send({ success: true });
+  } catch (err) {
+    handleAPIError(res, err);
+  }
+};
+
+export default put{{ entityName | toPascalCase }};

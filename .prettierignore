@@ -1,0 +1,12 @@
+node_modules
+dist
+coverage
+coverage-unit
+full-coverage
+documentation
+api-sample/migrations
+api-sample/.eslintrc
+api-sample/database/docker-compose.yml
+api-sample/database/docker-compose.apple-silicon.yml
+cli/commands/diagram/static
+cli/recipes/**/template

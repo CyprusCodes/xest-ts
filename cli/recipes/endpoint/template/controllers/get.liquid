@@ -1,0 +1,38 @@
+{% assign actionPrefix = "fetch" %}
+{% assign entityPascal = entityName | toPascalCase %}
+{% assign actionName = actionPrefix | append: entityPascal %}
+
+{% if filteredColumns.length > 0 %}
+  {% assign filterPart = "" %}
+  {% for col in filteredColumns %}
+    {% assign colName = col | split: "." | last | toPascalCase %}
+    {% assign filterPart = filterPart | append: colName %}
+    {% if forloop.last == false %}{% assign filterPart = filterPart | append: "And" %}{% endif %}
+  {% endfor %}
+  {% assign actionName = actionName | append: "By" | append: filterPart %}
+{% endif %}
+
+import { Request, Response } from "express";
+import { {{ actionName }} } from "~root/actions/{{ entityName | toCamelCase }}/{{ actionName }}";
+
+export default async (req: Request, res: Response) => {
+  try {
+    const { 
+      {%- for col in filteredColumns %}
+      {{ col | toCamelCase }}{%- unless forloop.last %}, {% endunless %}
+      {%- endfor %}
+    } = req.params;
+
+    const { {{ entityName | toCamelCase }} } = await {{ actionName }}({
+      {%- for col in filteredColumns %}
+      {{ col | toCamelCase }}{%- unless forloop.last %}, {% endunless %}
+      {%- endfor %}
+    });
+
+    return res.status(200).json({ {{ entityName | toCamelCase }} });
+  } catch (error: any) {
+    return res.status(error.status || 500).json({
+      message: error.message || "Internal Server Error"
+    });
+  }
+};

@@ -1,0 +1,68 @@
+import { submitQuery, sql, sqlReduce, sqlValueOrNull } from "~root/lib/database";
+
+/** * Unique symbol to differentiate between a null value and an unprovided field 
+ */
+const NO_UPDATE = Symbol("NO_UPDATE");
+
+/**
+ * Interface for the update parameters, combining filters and optional payload
+ */
+export interface Update{{ entityName | toPascalCase }}Params {
+  {%- for column in defaultFilterColumns %}
+  {{ column | toCamelCase }}: any; 
+  {%- endfor %}
+  {%- for column in uniqueSchemaColumns %}
+  {{ column.column | toCamelCase }}?: any; 
+  {%- endfor %}
+}
+
+/**
+ * Executes a partial UPDATE for {{ entityName | toPascalCase }}
+ */
+const update{{ entityName | toPascalCase }} = ({
+    {%- for column in defaultFilterColumns %}
+    {{ column | toCamelCase }},
+    {%- endfor %}
+    {%- for column in uniqueSchemaColumns %}
+    {{ column.column | toCamelCase }} = NO_UPDATE as any,
+    {%- endfor %}
+}: Update{{ entityName | toPascalCase }}Params): Promise<any> => {
+    const updates = [];
+
+    {%- for column in uniqueSchemaColumns %}
+    if (({{ column.column | toCamelCase }} as any) !== NO_UPDATE) {
+        updates.push(
+            sql`{{ column.column }} = {%- if column.nullable -%} 
+                {%- if column.dataType == 'json' -%} 
+                    ${sqlValueOrNull({{ column.column | toCamelCase }} ? JSON.stringify({{ column.column | toCamelCase }}) : null)} 
+                {%- else -%} 
+                    ${sqlValueOrNull({{ column.column | toCamelCase }})} 
+                {%- endif -%}
+            {%- else -%} 
+                {%- if column.dataType == 'json' -%} 
+                    ${JSON.stringify({{ column.column | toCamelCase }})} 
+                {%- else -%} 
+                    ${ {{ column.column | toCamelCase }} } 
+                {%- endif -%} 
+            {%- endif -%}`
+        );
+    }
+    {% endfor %}
+
+    if (updates.length !== 0) {
+        return submitQuery`
+            UPDATE 
+                {{ entityName | toSnakeCase }} 
+            SET 
+                ${updates.reduce(sqlReduce)} 
+            WHERE 
+                {%- for column in defaultFilterColumns %}
+                {{ column | toSnakeCase }} = ${ {{ column | toCamelCase }} } {%- unless forloop.last %} AND {% endunless -%}
+                {%- endfor -%}
+        `;
+    }
+
+    return Promise.resolve({ affectedRows: 0 });
+};
+
+export default update{{ entityName | toPascalCase }};

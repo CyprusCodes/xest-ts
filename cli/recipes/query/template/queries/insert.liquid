@@ -1,0 +1,15 @@
+import { submitQuery, getInsertId } from "~root/lib/database";
+
+const insert{{entityName | toPascalCase}} = (
+    {{ tableFields | functionParameters }}{% if tableFields and tableFields.size > 0 %}: any{% endif %}
+) => submitQuery`
+{% sql %}
+INSERT INTO {{ tableName | toSnakeCase }} (
+    {{ tableFields | sqlColumns }}
+) VALUES (
+    {{ insertParameters | sqlVariables }}
+);
+{% endsql %}
+`;
+
+export default getInsertId(insert{{entityName | toPascalCase }});
