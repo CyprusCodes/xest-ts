@@ -1,0 +1,14 @@
+import update{{ entityName | toPascalCase }} from "./queries/update{{ entityName | toPascalCase }}";
+
+/**
+ * Modifies an existing {{ entityName | toPascalCase | singular }}
+ */
+const modify{{ entityName | toPascalCase }} = async (
+  {{ argsColumns | functionParametersTyped }}
+): Promise<void> => {
+  await update{{ entityName | toPascalCase }}(
+    {{ argsColumns | functionParameters }}
+  );
+};
+
+export default modify{{ entityName | toPascalCase }};

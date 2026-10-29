@@ -1,0 +1,14 @@
+import delete{{ entityName | toPascalCase }} from "./queries/delete{{ entityName | toPascalCase }}";
+
+/**
+ * Removes {{ entityName | toPascalCase }} records based on the provided filters
+ */
+const remove{{ entityName | toPascalCase }} = async (
+  {{ filteredColumns | functionParametersTyped }}
+): Promise<void> => {
+  await delete{{ entityName | toPascalCase }}(
+    {{ filteredColumns | functionParameters }}
+  );
+};
+
+export default remove{{ entityName | toPascalCase }};

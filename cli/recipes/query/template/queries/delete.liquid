@@ -1,0 +1,12 @@
+import { submitQuery } from "~root/lib/database";
+
+const delete{{entityName | toPascalCase}} = ({
+  {{ primaryField | toCamelCase }}
+}: any) => submitQuery`
+{% sql %}
+DELETE FROM {{ tableName | toSnakeCase }}
+WHERE {{ primaryField | toSnakeCase }} = {{"${"}}{{primaryField | toCamelCase}}}
+{% endsql %}
+`;
+
+export default delete{{entityName | toPascalCase}};

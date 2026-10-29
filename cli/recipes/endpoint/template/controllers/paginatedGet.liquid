@@ -1,0 +1,39 @@
+import { Request, Response } from "express";
+import { paginate } from "~root/lib/paginate";
+
+/**
+ * Handle Paginated GET request for {{ entityName | toPascalCase }}
+ */
+const get{{ entityName | toPascalCase }} = async (req: Request, res: Response): Promise<Response> => {
+  const resultset = await paginate({
+    basePath: req.path,
+    baseTable: "{{ entityName | toSnakeCase }}",
+    selectFields: [
+      {%- for col in selectableColumns -%}
+      "{{ col }}"{%- unless forloop.last -%},{%- endunless -%}
+      {%- endfor -%}
+    ],
+    joinStatements: [{{ tablesToJoin | paginatedJoinGenerator: schema }}],
+    sortableAttributes: [
+      {%- for col in sortColumns -%}
+      "{{ col }}"{%- unless forloop.last -%},{%- endunless -%}
+      {%- endfor -%}
+    ],
+    filterableAttributes: [
+      {%- for col in filtersToAssign -%}
+      {{ col }}{%- unless forloop.last -%},{%- endunless -%}
+      {%- endfor -%}
+    ],
+    // Extracting typed values from req.query
+    sortBy: req.query.sort_by as string,
+    limit: req.query.page_size ? Number(req.query.page_size) : undefined,
+    page: req.query.page as string, // "first" | "last" | undefined
+    direction: req.query.direction as "next" | "previous",
+    filters: req.query.filters as any,
+    cursorValues: req.query.cursor as string
+  });
+
+  return res.send(resultset);
+};
+
+export default get{{ entityName | toPascalCase }};

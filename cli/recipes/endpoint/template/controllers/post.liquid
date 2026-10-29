@@ -1,0 +1,33 @@
+import { Request, Response } from "express";
+import handleAPIError from "~root/utils/handleAPIError";
+import create{{ entityName | toPascalCase }} from "~root/actions/{{ entityName | toCamelCase }}/create{{ entityName | toPascalCase }}";
+import newPost{{ entityName | toPascalCase }}Schema from "./schema/newPost{{ entityName | toPascalCase }}Schema";
+
+/**
+ * Handle POST request for {{ entityName | toPascalCase }}
+ */
+const post{{ entityName | toPascalCase }} = async (req: Request, res: Response): Promise<void> => {
+  // Destructure the expected columns from the request body
+  const { {{ includeColumns | functionParameters }} } = req.body;
+
+  try {
+    // Validate the body data against the Yup schema
+    await newPost{{ entityName | toPascalCase }}Schema.validate(
+      { {{ includeColumns | functionParameters }} }, 
+      { abortEarly: false }
+    );
+
+    // Pass the typed data to the action
+    const { inserted{{ entityName | toPascalCase | singular }}Id } = await create{{ entityName | toPascalCase }}(
+      {{ includeColumns | functionParameters }}
+    );
+
+    res.status(201).send({ 
+      inserted{{ entityName | toPascalCase | singular }}Id 
+    });
+  } catch (err) {
+    handleAPIError(res, err);
+  }
+};
+
+export default post{{ entityName | toPascalCase }};

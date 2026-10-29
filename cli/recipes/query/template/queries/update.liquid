@@ -1,0 +1,15 @@
+import { submitQuery } from "~root/lib/database";
+
+const update{{entityName | toPascalCase}} = (
+    {{ filterFieldsWithPrimary | functionParameters }}{% if filterFieldsWithPrimary and filterFieldsWithPrimary.size > 0 %}: any{% endif %}
+) => submitQuery`
+{% sql %}
+UPDATE
+{{ tableName | toSnakeCase }}
+SET
+{{ filterFields | sqlUpdateParams }}
+WHERE {{ primaryField | toSnakeCase }} = {{"${"}}{{primaryField | toCamelCase}}}
+{% endsql %}
+`;
+
+export default update{{entityName | toPascalCase}};

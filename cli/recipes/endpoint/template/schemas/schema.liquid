@@ -1,0 +1,11 @@
+import * as yup from "yup";
+
+const newGet{{ entityName | toPascalCase }}Schema = yup.object().shape({
+  {%- for col in columns %}
+    {%- if filteredColumns contains col.column or filteredColumns contains col.table_column %}
+    {{ col.column | toCamelCase }}: yup.{{ col.type | toYupType }}{% if col.nullable == 'NO' %}.required(){% endif %},
+    {%- endif %}
+  {%- endfor %}
+});
+
+export default newGet{{ entityName | toPascalCase }}Schema;
